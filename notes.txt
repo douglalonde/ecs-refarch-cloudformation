@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name p1-5 --template-body file:///home/dlalonde/code/ecs-refarch-cloudformation/master.yaml --capabilities CAPABILITY_NAMED_IAM --tags p1-5

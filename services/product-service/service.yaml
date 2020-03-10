@@ -45,7 +45,7 @@ Resources:
       ContainerDefinitions:
         - Name: product-service
           Essential: true
-          Image: 275396840892.dkr.ecr.us-east-1.amazonaws.coms3.amazonaws.com/ecs-cloudformation-dlalonde-demo2/product-service:1.0.0
+          Image: 275396840892.dkr.ecr.us-east-1.amazonaws.com/ecs-refarch-cloudformation/product-service:1.0.0
           Memory: 128
           PortMappings:
             - ContainerPort: 8001
