@@ -31,7 +31,7 @@ func main() {
 			},
 			product{
 				ID:          "0000-0000-0003",
-				Title:       "Egg Basket",
+				Title:       "Nifty Egg Basket",
 				Description: "Holds 6 unbroken eggs or 36 broken ones",
 				Price:       9.99,
 			},
