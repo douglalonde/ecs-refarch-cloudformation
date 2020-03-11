@@ -60,18 +60,17 @@ Resources:
         - Name: website-service
           Essential: true
 #          Image: 275396840892.dkr.ecr.us-east-1.amazonaws.com/ecs-refarch-cloudformation/website-service:1.0.0
-          Image: 190472737949.dkr.ecr.us-east-1.amazonaws.com/reg2:latest
 #          Image: "amazon/amazon-ecs-sample"
           Image: 190472737949.dkr.ecr.us-east-1.amazonaws.com/bulletin-base:latest
           Memory: 128
-          Environment:
+          Environment: 
             - Name: PRODUCT_SERVICE_URL
               Value: !Ref ProductServiceUrl
           PortMappings:
             - ContainerPort: 8080
           LogConfiguration:
             LogDriver: awslogs
-            Options:
+            Options: 
               awslogs-group: !Ref CloudWatchLogsGroup
               awslogs-region: !Ref AWS::Region
 
@@ -192,42 +191,42 @@ Resources:
           - MetricIntervalUpperBound: 0
             ScalingAdjustment: -1
 
-  CPUScaleOutAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmName: CPU utilization greater than 90%
-      AlarmDescription: Alarm if cpu utilization greater than 90% of reserved cpu
-      Namespace: AWS/ECS
-      MetricName: CPUUtilization
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref Cluster
-        - Name: ServiceName
-          Value: !GetAtt Service.Name
-      Statistic: Maximum
-      Period: "60"
-      EvaluationPeriods: "3"
-      Threshold: "90"
-      ComparisonOperator: GreaterThanThreshold
-      AlarmActions:
-        - !Ref ServiceScaleOutPolicy
+  # CPUScaleOutAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     AlarmName: CPU utilization greater than 90%
+  #     AlarmDescription: Alarm if cpu utilization greater than 90% of reserved cpu
+  #     Namespace: AWS/ECS
+  #     MetricName: CPUUtilization
+  #     Dimensions:
+  #       - Name: ClusterName
+  #         Value: !Ref Cluster
+  #       - Name: ServiceName
+  #         Value: !GetAtt Service.Name
+  #     Statistic: Maximum
+  #     Period: "60"
+  #     EvaluationPeriods: "3"
+  #     Threshold: "90"
+  #     ComparisonOperator: GreaterThanThreshold
+  #     AlarmActions:
+  #       - !Ref ServiceScaleOutPolicy
 
-  CPUScaleInAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmName: CPU utilization less than 70%
-      AlarmDescription: Alarm if cpu utilization greater than 70% of reserved cpu
-      Namespace: AWS/ECS
-      MetricName: CPUUtilization
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref Cluster
-        - Name: ServiceName
-          Value: !GetAtt Service.Name
-      Statistic: Maximum
-      Period: "60"
-      EvaluationPeriods: "10"
-      Threshold: "70"
-      ComparisonOperator: LessThanThreshold
-      AlarmActions:
-        - !Ref ServiceScaleInPolicy
+  # CPUScaleInAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     AlarmName: CPU utilization less than 70%
+  #     AlarmDescription: Alarm if cpu utilization greater than 70% of reserved cpu
+  #     Namespace: AWS/ECS
+  #     MetricName: CPUUtilization
+  #     Dimensions:
+  #       - Name: ClusterName
+  #         Value: !Ref Cluster
+  #       - Name: ServiceName
+  #         Value: !GetAtt Service.Name
+  #     Statistic: Maximum
+  #     Period: "60"
+  #     EvaluationPeriods: "10"
+  #     Threshold: "70"
+  #     ComparisonOperator: LessThanThreshold
+  #     AlarmActions:
+  #       - !Ref ServiceScaleInPolicy
