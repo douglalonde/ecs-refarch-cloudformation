@@ -1,6 +1,11 @@
+
 ![build-status](https://codebuild.eu-west-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiKzBuNjJCUFk2STRvbDZENXlMUFJOenF2V2EyQ3FMbEtuWDlQeVp6TWlxdXhNMGVOZGo5bG9jdTl1YU16RmZIVVNxa3VqTVg3V3drSnJxOUQwSmhqV2g0PSIsIml2UGFyYW1ldGVyU3BlYyI6IlJJRE4wZGJaS25LL0s0dzkiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
-# Deploying Microservices with Amazon ECS, AWS CloudFormation, and an Application Load Balancer
+# Infrastructrure and Code Pipeline: Deploying Microservices with Amazon ECS, AWS CloudFormation, and an Application Load Balancer
+
+Doug Lalonde
+March, 2020
+Originally forked from and partially based on[aws-samples/ecs-refarch-cloudformation](https://github.com/aws-samples/ecs-refarch-cloudformation)
 
 This reference architecture provides a set of YAML templates for deploying microservices to [Amazon EC2 Container Service (Amazon ECS)](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) with [AWS CloudFormation](https://aws.amazon.com/cloudformation/).
 
@@ -39,6 +44,9 @@ The repository consists of a set of nested templates that deploy the following:
  - ALB path-based routes for each ECS service to route the inbound traffic to the correct service.
  - Centralized container logging with [Amazon CloudWatch Logs](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html).
  - A [Lambda Function](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) and [Auto Scaling Lifecycle Hook](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html) to [drain Tasks from your Container Instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-draining.html) when an Instance is selected for Termination in your Auto Scaling Group.
+
+For the purposes of this demo, the single web application service website-service will be used.
+
 ## Why use AWS CloudFormation with Amazon ECS?
 
 Using CloudFormation to deploy and manage services with ECS has a number of nice benefits over more traditional methods ([AWS CLI](https://aws.amazon.com/cli), scripting, etc.). 
@@ -69,9 +77,7 @@ The templates below are included in this repository and reference architecture:
 | [infrastructure/load-balancers.yaml](infrastructure/load-balancers.yaml) | This template deploys an ALB to the public subnets, which exposes the various ECS services. It is created in in a separate nested template, so that it can be referenced by all of the other nested templates and so that the various ECS services can register with it. |
 | [infrastructure/ecs-cluster.yaml](infrastructure/ecs-cluster.yaml) | This template deploys an ECS cluster to the private subnets using an Auto Scaling group and installs the AWS SSM agent with related policy requirements. |
 | [infrastructure/lifecyclehook.yaml](infrastructure/lifecyclehook.yaml) | This template deploys a Lambda Function and Auto Scaling Lifecycle Hook to drain Tasks from your Container Instances when an Instance is selected for Termination in your Auto Scaling Group.
-| [services/product-service/service.yaml](services/product-service/service.yaml) | This is an example of a long-running ECS service that serves a JSON API of products. For the full source for the service, see [services/product-service/src](services/product-service/src).|
-| [services/website-service/service.yaml](services/website-service/service.yaml) | This is an example of a long-running ECS service that needs to connect to another service (product-service) via the load-balanced URL. We use an environment variable to pass the product-service URL to the containers. For the full source for this service, see [services/website-service/src](services/website-service/src). |
-
+| [services/website-service/service.yaml](services/website-service/service.yaml) | This is a simple sample website.
 After the CloudFormation templates have been deployed, the [stack outputs](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) contain a link to the load-balanced URLs for each of the deployed microservices.
 
 ![stack-outputs](images/stack-outputs.png)
@@ -160,7 +166,15 @@ As well as configuring Auto Scaling for the ECS hosts (your pool of compute), yo
 
 ### Deploy multiple environments (e.g., dev, test, pre-production)
 
+Simply use the script ecs-refarch-cloudformation/create_cluster_infrastructure.sh CLUSTERNAME
+i.e. in that repo, run: create_cluster_infrastructure.sh QA
+
 Deploy another CloudFormation stack from the same set of templates to create a new environment. The stack name provided when deploying the stack is prefixed to all taggable resources (e.g., EC2 instances, VPCs, etc.) so you can distinguish the different environment resources in the AWS Management Console. 
+
+### Update and Deploy the Website
+Make any changes to the code in the repo bulletin-board-app-base, git add, commit and push.  To deploy the resultant ECS Docker container to a stack, in the bulletin-board-app-base repo, run the script:
+
+./update_website_service.sh CLUSTER_NAME
 
 ### Change the VPC or subnet IP ranges
 
@@ -191,6 +205,8 @@ VPC:
 ```
 
 ### Update an ECS service to a new Docker image version
+
+This is to deploy specific version (see "Update and Deploy the Website" above to simply update code changes.
 
 ECS has the ability to perform rolling upgrades to your ECS services to minimize downtime during deployments. For more information, see [Updating a Service](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html).
 
@@ -235,7 +251,7 @@ In order to use Spot with this template, you will need to enable ```SpotPrice```
 
 If you found yourself wishing this set of frequently asked questions had an answer for a particular problem, please [submit a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/). The chances are that others will also benefit from having the answer listed here.
 
-## Contributing
+## Contributing (to original repo)
 
 Please [create a new GitHub issue](https://github.com/awslabss3.amazonaws.com/ecs-cloudformation-dlalonde-demo2/issues/new) for any feature requests, bugs, or documentation improvements. 
 
@@ -250,5 +266,6 @@ Licensed under the Apache License, Version 2.0 (the "License"). You may not use 
 [http://aws.amazon.com/apache2.0/](http://aws.amazon.com/apache2.0/)
 
 or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
 
 
